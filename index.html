@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Quick Start - Leaflet</title>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+    crossorigin=""></script>
+  <script src="https://unpkg.com/micromodal/dist/micromodal.min.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/latlon-geohash@1.1.0/latlon-geohash.min.js" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css" />
+  <!-- 'nano' theme -->
+  <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.es5.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Neuton&display=swap" rel="stylesheet">
+
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://unpkg.com/esri-leaflet"></script>
+
+  <!-- Esri Leaflet Geocoder -->
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css">
+  <script src="https://unpkg.com/esri-leaflet-geocoder"></script>
+
+  <style>
+    /**************************\
+  Basic Modal Styles
+\**************************/
+    html {
+      background: url(https://i.imgur.com/XMhCVlZ.jpg) no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      font-family: 'Neuton', serif;
+    }
+
+    @media only screen and (min-width :1200px) {
+      .content-container {
+        width: 1200px;
+      }
+
+      .missing-pets-map {
+        height: 700px;
+      }
+    }
+
+    @media only screen and (max-width :1200px) {
+      .content-container {
+        width: 992px;
+      }
+
+      .missing-pets-map {
+        height: 600px;
+      }
+    }
+
+    /* Medium Devices, Desktops */
+    @media only screen and (max-width : 992px) {
+      .content-container {
+        width: 768px;
+      }
+
+      .missing-pets-map {
+        height: 500px;
+      }
+    }
+
+    /* Small Devices, Tablets */
+    @media only screen and (max-width : 768px) {
+      .content-container {
+        width: 480px;
+      }
+
+      .missing-pets-map {
+        height: 600px;
+      }
+    }
+
+    /* Extra Small Devices, Phones */
+    @media only screen and (max-width : 480px) {
+      .content-container {
+        width: 320px;
+      }
+
+      .missing-pets-map {
+        height: 600px;
+      }
+    }
+
+    /* Custom, iPhone Retina */
+    @media only screen and (max-width : 320px) {
+      .content-container {
+        width: 320px;
+      }
+
+      .missing-pets-map {
+        height: 600px;
+      }
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-column-gap: 24px;
+    }
+
+    .frontpage-card {
+      width: 300px;
+      background-color: #e6e6e6;
+      font-size: x-large;
+    }
+
+    .content-container {
+      margin: 20px auto;
+      padding: 20px
+    }
+
+    .header-container {
+      width: 100%;
+      text-align: center;
+      font-size: large;
+      font-family: 'Fredoka One', cursive;
+    }
+
+    .missing-pets-map {
+      margin: 20px auto auto auto;
+      width: 100%;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    .pet-color-one-container {
+      display: none
+    }
+
+    .pet-color-two-container {
+      display: none;
+    }
+
+    .pickr {
+      margin-bottom: 10px;
+    }
+
+    .pcr-app[data-theme=nano] {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .modal {
+      font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto, segoe ui, arial, sans-serif;
+    }
+
+    .modal__overlay {
+      z-index: 3100;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal__container {
+      width: 100%;
+      background-color: #fff;
+      padding: 30px;
+      max-width: 500px;
+      max-height: 100vh;
+      border-radius: 4px;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    .modal__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal__title {
+      margin-top: 0;
+      margin-bottom: 0;
+      font-weight: 600;
+      font-size: 1.25rem;
+      line-height: 1.25;
+      color: #00449e;
+      box-sizing: border-box;
+    }
+
+    .modal__close {
+      background: transparent;
+      border: 0;
+    }
+
+    .modal__header .modal__close:before {
+      content: "\2715";
+    }
+
+    .modal__content {
+      margin-top: 2rem;
+      margin-bottom: 0px;
+      line-height: 1.5;
+      color: rgba(0, 0, 0, .8);
+    }
+
+    .modal__btn {
+      font-size: .875rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: .5rem;
+      padding-bottom: .5rem;
+      background-color: #e6e6e6;
+      color: rgba(0, 0, 0, .8);
+      border-radius: .25rem;
+      border-style: none;
+      border-width: 0;
+      cursor: pointer;
+      -webkit-appearance: button;
+      text-transform: none;
+      overflow: visible;
+      line-height: 1.15;
+      margin: 0;
+      will-change: transform;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      transition: -webkit-transform .25s ease-out;
+      transition: transform .25s ease-out;
+      transition: transform .25s ease-out, -webkit-transform .25s ease-out;
+    }
+
+    .modal__btn:focus,
+    .modal__btn:hover {
+      -webkit-transform: scale(1.05);
+      transform: scale(1.05);
+    }
+
+    .modal__btn-primary {
+      background-color: #00449e;
+      color: #fff;
+    }
+
+
+
+    /**************************\
+  Demo Animation Style
+\**************************/
+    @keyframes mmfadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes mmfadeOut {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes mmslideIn {
+      from {
+        transform: translateY(15%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes mmslideOut {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-10%);
+      }
+    }
+
+    .micromodal-slide {
+      display: none;
+      z-index: 3000;
+
+    }
+
+    .micromodal-slide.is-open {
+      display: block;
+    }
+
+    .micromodal-slide[aria-hidden="false"] .modal__overlay {
+      animation: mmfadeIn .3s cubic-bezier(0.0, 0.0, 0.2, 1);
+    }
+
+    .micromodal-slide[aria-hidden="false"] .modal__container {
+      animation: mmslideIn .3s cubic-bezier(0, 0, .2, 1);
+    }
+
+    .micromodal-slide[aria-hidden="true"] .modal__overlay {
+      animation: mmfadeOut .3s cubic-bezier(0.0, 0.0, 0.2, 1);
+    }
+
+    .micromodal-slide[aria-hidden="true"] .modal__container {
+      animation: mmslideOut .3s cubic-bezier(0, 0, .2, 1);
+    }
+
+    .micromodal-slide .modal__container,
+    .micromodal-slide .modal__overlay {
+      will-change: transform;
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+  <div class="modal micromodal-slide" id="create-missing-pet-modal" aria-hidden="true">
+    <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+      <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+        <header class="modal__header">
+          <h2 class="modal__title" id="modal-1-title">
+            Report missing pet
+          </h2>
+          <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+        </header>
+        <main class="modal__content" id="modal-1-content">
+          <form class="black-80" action="/">
+            <div class="modal__content" id="modal-2-content">
+              <div class="measure">
+                <input id="form-geohash" name="geohash" type="hidden" value="nothing">
+
+                <label for="pet_type" class="f6 b db mb2 js-name">Type of pet</label>
+                <select id="pet_type" class="input-reset ba b--black-20 pa2 mb2 db w-100">
+                  <option value="dog">Dog</option>
+                  <option value="cat">Cat</option>
+                </select>
+
+                <label for="pet_name" class="f6 b db mb2 js-name">Pet calling name <span class="normal black-60">(what
+                    name to call for)</span></label>
+                <input id="pet_name" class="input-reset ba b--black-20 pa2 mb2 db w-100 js-nameInput" type="text"
+                  maxlength="30" required />
+
+                <label for="pet_age" class="f6 b db mb2 js-name">Pet age <span
+                    class="normal black-60">(years)</span></label>
+                <input id="pet_name" class="input-reset ba b--black-20 pa2 mb2 db w-100" type="number" min="0" step="1"
+                  value="0" required />
+
+
+                <label for="pet_image" class="f6 b db mb2 js-name">Select image <span class="normal black-60">(will be
+                    resized)</span></label>
+                <input class="input-reset bapa2 mb2 mt2 f7 w-100" type="file" id="pet_image" name="pet_image"
+                  accept="image/*" />
+
+                <label for="pet_dissapeared_at" class="f6 b db mb2 js-name">Last seen <span
+                    class="normal black-60">(date and
+                    time)</span></label></label>
+                <input type="text" class="input-reset ba b--black-20 pa2 mb2 db w-100" id="pet_dissapeared_at"
+                  placeholder="Please select Date and Time" required>
+
+
+                <label for="petColorPickerOne" class="f6 b db mb2 js-name">Main color <span
+                    class="normal black-60">(optional)</span></label></label>
+                <div id="petColorPickerOne"></div>
+                <input id="petColorOne" class="color-value" name="petColorOne" type="text" maxlength="7" hidden />
+
+                <label for="petColorPickerTwo" class="f6 b db mb2 js-name">Secondary color <span
+                    class="normal black-60">(optional)</span></label></label>
+                <div id="petColorPickerTwo"></div>
+                <input id="petColorTwo" class="color-value" name="petColorTwo" type="text" maxlength="7" hidden />
+
+                <label for="pet_description" class="f6 b db mb2 js-name">Pet description <span
+                    class="normal black-60">(max 240 length)</span></label>
+                <textarea id="pet_description" class="input-reset ba b--black-20 pa2 mb2 db w-100"
+                  name="pet_description" rows="6" cols="60" placeholder="A description of your pet" maxlength="240"
+                  required></textarea>
+
+              </div>
+            </div>
+            <footer class="modal__footer">
+              <button type="submit" class="modal__btn modal__btn-primary" value="Login">save</button>
+              <button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
+
+            </footer>
+          </form>
+        </main>
+
+      </div>
+    </div>
+  </div>
+  <div class="content-container">
+    <div class="header-container">
+      <h1>Missing Pets On Earth</h1>
+    </div>
+    <div id="mapid" class="missing-pets-map"></div>
+
+    <div class="cards-container">
+
+      <article class="frontpage-card br2 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l center">
+        <img src="https://i.imgur.com/ylfAdzA.jpg" class="db w-100 br2 br--top"
+          alt="Photo of a kitten looking menacing.">
+        <div class="pa2 ph3-ns pb3-ns">
+          <div class="dt w-100 mt1">
+            <h1 class="f5 f4-ns mv0">About</h1>
+          </div>
+          <p class="f6 lh-copy measure mt2 mid-gray">
+            The page was started as a reaction on the dissapearance of a cat in the neighboorhood. We realized there was
+            no
+            easy way of posting it somewhere but eventually we found the cat. Having a site like this woule have speeded
+            up
+            the process considerably.
+          </p>
+        </div>
+      </article>
+      <article class="frontpage-card br2 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l center">
+        <img src="https://i.imgur.com/5oE2RBF.jpg" class="db w-100 br2 br--top"
+          alt="Photo of a kitten looking menacing.">
+        <div class="pa2 ph3-ns pb3-ns">
+          <div class="dt w-100 mt1">
+            <h1 class="f5 f4-ns mv0">Cat</h1>
+          </div>
+          <p class="f6 lh-copy measure mt2 mid-gray">
+            If it fits, i sits burrow under covers. Destroy couch leave hair everywhere,
+            and touch water with paw then recoil in horror.
+          </p>
+        </div>
+      </article>
+      <article class="frontpage-card br2 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l center">
+        <img src="https://i.imgur.com/apJZy3H.jpg" class="db w-100 br2 br--top"
+          alt="Photo of a kitten looking menacing.">
+        <div class="pa2 ph3-ns pb3-ns">
+          <div class="dt w-100 mt1">
+            <h1 class="f5 f4-ns mv0">Cat</h1>
+          </div>
+          <p class="f6 lh-copy measure mt2 mid-gray">
+            If it fits, i sits burrow under covers. Destroy couch leave hair everywhere,
+            and touch water with paw then recoil in horror.
+          </p>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <script type="module">
+    var markers = {};
+    var mymap = L.map('mapid').setView([51.505, -0.09], 8);
+
+    var searchControl = L.esri.Geocoding.geosearch({
+      useMapBounds: false,
+      collapseAfterResult: true,
+
+    }).addTo(mymap);
+    var results = L.layerGroup().addTo(mymap);
+    searchControl.on("results", function (data) {
+      results.clearLayers();
+      console.log(data)
+      for (var i = data.results.length - 1; i >= 0; i--) {
+        let marker = L.marker(data.results[i].latlng, 16)
+        results.addLayer(marker);
+
+
+      }
+    });
+
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+      maxZoom: 30,
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+
+
+    }).addTo(mymap);
+    const petColorPickerOne = Pickr.create({
+      el: '#petColorPickerOne',
+      theme: 'nano', // or 'monolith', or 'nano'
+      inline: true,
+      comparison: false,
+      appClass: "pet-color-one-container",
+      default: "#e00e00",
+      lockOpacity: true,
+
+      components: {
+
+        // Main components
+        preview: true,
+        opacity: false,
+        hue: true,
+
+        // Input / output Options
+        interaction: {
+          rgb: true,
+        }
+      }
+    });
+    petColorPickerOne.on('hide', instance => {
+      console.log(instance)
+
+      document.querySelectorAll('.pet-color-one-container').forEach(function (el) {
+        el.style.display = 'none';
+
+        document.getElementById("petColorOne").value = instance._color.toHEXA();
+      });
+      console.log("hide")
+    }).on('show', (color, instance) => {
+      document.querySelectorAll('.pet-color-one-container').forEach(function (el) {
+        el.style.display = 'block';
+
+      });
+    })
+    const petColorPickerTwo = Pickr.create({
+      el: '#petColorPickerTwo',
+      theme: 'nano', // or 'monolith', or 'nano'
+      inline: true,
+      comparison: false,
+      appClass: "pet-color-two-container",
+      default: "#e00e00",
+      components: {
+        lockOpacity: true,
+
+
+        // Main components
+        preview: true,
+        opacity: false,
+        hue: true,
+
+        // Input / output Options
+        interaction: {
+          rgb: true,
+        }
+      }
+    });
+    petColorPickerTwo.on('hide', instance => {
+      document.querySelectorAll('.pet-color-two-container').forEach(function (el) {
+        el.style.display = 'none';
+
+        document.getElementById("petColorTwo").value = instance._color.toHEXA();
+      });
+      console.log("hide")
+    }).on('show', (color, instance) => {
+
+      document.querySelectorAll('.pet-color-two-container').forEach(function (el) {
+        el.style.display = 'block';
+
+      });
+    })
+    MicroModal.init();
+    flatpickr('#pet_dissapeared_at', {
+      altInput: true,
+      altFormat: "M j Y H:i",
+      enableTime: true,
+      time_24hr: true,
+      dateFormat: "Z",
+      maxDate: new Date()
+    });
+
+
+    var popup = L.popup();
+    var greenIcon = new L.Icon({
+      iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    var greyIcon = new L.Icon({
+      iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    function onMapClick(e) {
+      console.log(e.latlng)
+      const geohash = Geohash.encode(e.latlng.lat, e.latlng.lng, 12);
+      document.getElementById("form-geohash").value = geohash;
+      MicroModal.show('create-missing-pet-modal')
+
+      // the following is poc on getting neighboors from a geohash
+      // console.log(geohash);
+      // const levels_up = -3
+      // const zoomed_out_geohash = geohash.slice(0, levels_up)
+
+
+      // let prefixes = Object.values(Geohash.neighbours(zoomed_out_geohash))
+      // prefixes.push(zoomed_out_geohash)
+
+
+
+      // var marker = L.marker([e.latlng.lat, e.latlng.lng], { icon: greenIcon }).addTo(mymap);
+
+      // Object.keys(markers).forEach(function (local_geohash) {
+      //   const thismarker = markers[local_geohash]
+      //   if (new RegExp(prefixes.join("|")).test(local_geohash)) {
+      //     console.log("contained", local_geohash)
+      //     thismarker.setIcon(greenIcon)
+
+      //   } else {
+      //     console.log("outside", local_geohash)
+      //     thismarker.setIcon(greyIcon)
+
+      //   }
+      // });
+      // markers[geohash] = marker;
+
+    }
+
+    mymap.on('click', onMapClick);
+
+  </script>
+
+
+
+</body>
+
+</html>
